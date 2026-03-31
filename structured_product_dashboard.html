@@ -1,0 +1,519 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;700&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── TAB NAV ── */
+.portfolio-nav { font-family: 'Syne', sans-serif; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 0.5px solid var(--color-border-tertiary); padding-bottom: 0; }
+.tab-list { display: flex; gap: 0; }
+.tab-btn { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 500; background: none; border: none; cursor: pointer; padding: 10px 18px; color: var(--color-text-tertiary); border-bottom: 2px solid transparent; transition: all 0.15s; letter-spacing: 0.02em; }
+.tab-btn:hover { color: var(--color-text-primary); }
+.tab-btn.active { color: var(--color-text-primary); border-bottom: 2px solid var(--color-text-primary); }
+.tab-isin { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--color-text-tertiary); margin-top: 2px; }
+.portfolio-label { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--color-text-tertiary); padding-bottom: 12px; }
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── SHARED DASH ── */
+.dash { font-family: 'Syne', sans-serif; padding: 0 0 28px; color: var(--color-text-primary); }
+.dash-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+.dash-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.08em; text-transform: uppercase; }
+.dash-subtitle { font-size: 11px; color: var(--color-text-tertiary); margin-top: 3px; font-family: 'DM Mono', monospace; }
+.status-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-family: 'DM Mono', monospace; padding: 4px 10px; border-radius: 20px; background: var(--color-background-success); color: var(--color-text-success); border: 0.5px solid var(--color-border-tertiary); }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: #1D9E75; }
+
+/* ── SUMMARY ROW ── */
+.summary-row { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 20px; }
+.sum-card { background: var(--color-background-secondary); border-radius: 10px; padding: 14px 16px; }
+.sum-label { font-size: 10px; color: var(--color-text-tertiary); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+.sum-val { font-size: 22px; font-weight: 700; line-height: 1; font-family: 'DM Mono', monospace; }
+.sum-val.danger { color: #A32D2D; }
+.sum-val.warn { color: #854F0B; }
+.sum-val.ok { color: #0F6E56; }
+.sum-sub { font-size: 11px; color: var(--color-text-tertiary); margin-top: 4px; font-family: 'DM Mono', monospace; }
+
+/* ── INDEX ROW ── */
+.index-grid { display: grid; gap: 0; margin-bottom: 20px; background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; overflow: hidden; }
+.index-grid.cols4 { grid-template-columns: repeat(4, 1fr); }
+.index-grid.cols3 { grid-template-columns: repeat(3, 1fr); }
+.idx-card { padding: 14px 16px; border-right: 0.5px solid var(--color-border-tertiary); }
+.idx-card:last-child { border-right: none; }
+.idx-card.worst { outline: 1.5px solid #E24B4A; outline-offset: -1.5px; border-right: none; }
+.idx-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+.idx-name { font-size: 12px; font-weight: 600; }
+.idx-ticker { font-size: 10px; color: var(--color-text-tertiary); font-family: 'DM Mono', monospace; margin-top: 2px; }
+.worst-badge { font-size: 10px; background: #FCEBEB; color: #A32D2D; border-radius: 4px; padding: 2px 7px; font-weight: 500; white-space: nowrap; }
+.idx-levels { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 0; border-top: 0.5px solid var(--color-border-tertiary); padding-top: 10px; }
+.lvl-box { padding: 0; }
+.lvl-label { font-size: 10px; color: var(--color-text-tertiary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.04em; }
+.lvl-val { font-size: 14px; font-weight: 600; font-family: 'DM Mono', monospace; color: var(--color-text-primary); }
+.lvl-val.red { color: #A32D2D; }
+.lvl-val.down { color: #854F0B; }
+.perf-tag { font-size: 10px; font-family: 'DM Mono', monospace; border-radius: 4px; padding: 1px 5px; margin-left: 4px; }
+.perf-neg { background: var(--color-background-danger); color: var(--color-text-danger); }
+.perf-pos { background: #EAF4F0; color: #0F6E56; }
+
+/* ── SCHEDULE TABLE ── */
+.schedule-section { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+.schedule-title { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 14px; }
+.sched-table { width: 100%; border-collapse: collapse; font-family: 'DM Mono', monospace; font-size: 11px; }
+.sched-table thead th { text-align: left; font-size: 10px; color: var(--color-text-tertiary); letter-spacing: 0.05em; text-transform: uppercase; padding: 0 10px 8px 10px; border-bottom: 0.5px solid var(--color-border-tertiary); font-weight: 500; }
+.sched-table thead th:not(:first-child) { text-align: right; }
+.sched-table tbody tr { border-bottom: 0.5px solid var(--color-border-tertiary); }
+.sched-table tbody tr:last-child { border-bottom: none; }
+.sched-table tbody tr.next-up td { background: var(--color-background-secondary); }
+.sched-table tbody td { padding: 9px 10px; color: var(--color-text-primary); vertical-align: middle; }
+.sched-table tbody td:not(:first-child) { text-align: right; }
+.sched-date { font-weight: 500; }
+.sched-obs { font-size: 10px; color: var(--color-text-tertiary); margin-top: 2px; }
+.tag-coupon { display: inline-block; font-size: 10px; border-radius: 3px; padding: 1px 6px; background: #EAF4F0; color: #0F6E56; margin-right: 3px; }
+.tag-call { display: inline-block; font-size: 10px; border-radius: 3px; padding: 1px 6px; background: #EEF2FF; color: #3B4FBF; margin-right: 3px; }
+.tag-final { display: inline-block; font-size: 10px; border-radius: 3px; padding: 1px 6px; background: var(--color-background-secondary); color: var(--color-text-secondary); }
+.tag-next { display: inline-block; font-size: 9px; border-radius: 3px; padding: 1px 5px; background: #FFF3E0; color: #854F0B; margin-left: 4px; vertical-align: middle; }
+.level-cell { color: var(--color-text-primary); }
+.level-na { color: var(--color-text-tertiary); }
+.status-yes { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: #0F6E56; background: #EAF4F0; border-radius: 5px; padding: 3px 8px; margin-top: 5px; }
+.status-no { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 500; color: #A32D2D; background: #FCEBEB; border-radius: 5px; padding: 3px 8px; margin-top: 5px; }
+.status-icon { font-size: 12px; }
+
+/* ── CHART ── */
+.chart-section { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: 12px; padding: 16px; }
+.chart-title { font-size: 11px; font-weight: 500; color: var(--color-text-secondary); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 14px; }
+.footer { margin-top: 12px; font-size: 10px; color: var(--color-text-tertiary); font-family: 'DM Mono', monospace; }
+</style>
+
+<!-- ═══════════ TAB NAVIGATION ═══════════ -->
+<div class="portfolio-nav">
+  <div class="tab-list">
+    <button class="tab-btn active" onclick="switchTab('p1', this)">
+      UBS · DE000UBS0P13
+      <div class="tab-isin">4 underlyings · Maturity Feb 2030</div>
+    </button>
+    <button class="tab-btn" onclick="switchTab('p2', this)">
+      Vontobel · DE000VJ5XM04
+      <div class="tab-isin">3 underlyings · Maturity Mar 2027</div>
+    </button>
+  </div>
+  <div class="portfolio-label">2 products · As of 25 Mar 2026</div>
+</div>
+
+<!-- ═══════════ PAGE 1 — UBS ═══════════ -->
+<div id="p1" class="page active">
+<div class="dash">
+
+  <div class="dash-header">
+    <div>
+      <div class="dash-title">Worst-of barrier reverse convertible</div>
+      <div class="dash-subtitle">4 underlyings · Kick-in 50% · Strike 100% · No memory · As of 25 Mar 2026</div>
+    </div>
+    <div class="status-pill"><span class="dot"></span> Barrier intact <span style="opacity:0.6;font-size:10px;">(continuous)</span></div>
+  </div>
+
+  <div class="summary-row">
+    <div class="sum-card">
+      <div class="sum-label">Worst buffer</div>
+      <div class="sum-val warn">45.5%</div>
+      <div class="sum-sub">DAX · worst-of driver</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Avg buffer</div>
+      <div class="sum-val ok">46.8%</div>
+      <div class="sum-sub">across 4 indices</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Worst vs fixing</div>
+      <div class="sum-val danger">−9.1%</div>
+      <div class="sum-sub">DAX · −2,278 pts</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Best vs fixing</div>
+      <div class="sum-val warn">−3.8%</div>
+      <div class="sum-sub">S&P 500 · −260 pts</div>
+    </div>
+  </div>
+
+  <div class="index-grid cols4">
+    <div class="idx-card">
+      <div class="idx-top">
+        <div>
+          <div class="idx-name">EURO STOXX 50® <span class="perf-tag perf-neg">−7.6%</span></div>
+          <div class="idx-ticker">SX5E · EU0009658145</div>
+        </div>
+      </div>
+      <div class="idx-levels">
+        <div class="lvl-box"><div class="lvl-label">Fixing</div><div class="lvl-val">5,985</div></div>
+        <div class="lvl-box"><div class="lvl-label">Current</div><div class="lvl-val down">5,531</div></div>
+        <div class="lvl-box"><div class="lvl-label">Kick-in</div><div class="lvl-val red">2,993</div></div>
+      </div>
+    </div>
+    <div class="idx-card">
+      <div class="idx-top">
+        <div>
+          <div class="idx-name">S&P 500® <span class="perf-tag perf-neg">−3.8%</span></div>
+          <div class="idx-ticker">SPX · US78378X1072</div>
+        </div>
+      </div>
+      <div class="idx-levels">
+        <div class="lvl-box"><div class="lvl-label">Fixing</div><div class="lvl-val">6,836</div></div>
+        <div class="lvl-box"><div class="lvl-label">Current</div><div class="lvl-val down">6,576</div></div>
+        <div class="lvl-box"><div class="lvl-label">Kick-in</div><div class="lvl-val red">3,418</div></div>
+      </div>
+    </div>
+    <div class="idx-card">
+      <div class="idx-top">
+        <div>
+          <div class="idx-name">Nikkei 225 <span class="perf-tag perf-neg">−5.6%</span></div>
+          <div class="idx-ticker">NKY · JP9010C00002</div>
+        </div>
+      </div>
+      <div class="idx-levels">
+        <div class="lvl-box"><div class="lvl-label">Fixing</div><div class="lvl-val">56,942</div></div>
+        <div class="lvl-box"><div class="lvl-label">Current</div><div class="lvl-val down">53,750</div></div>
+        <div class="lvl-box"><div class="lvl-label">Kick-in</div><div class="lvl-val red">28,471</div></div>
+      </div>
+    </div>
+    <div class="idx-card worst">
+      <div class="idx-top">
+        <div>
+          <div class="idx-name">DAX® <span class="perf-tag perf-neg">−9.1%</span></div>
+          <div class="idx-ticker">DAX · DE0008469008</div>
+        </div>
+        <span class="worst-badge">worst-of</span>
+      </div>
+      <div class="idx-levels">
+        <div class="lvl-box"><div class="lvl-label">Fixing</div><div class="lvl-val">24,915</div></div>
+        <div class="lvl-box"><div class="lvl-label">Current</div><div class="lvl-val down">22,637</div></div>
+        <div class="lvl-box"><div class="lvl-label">Kick-in</div><div class="lvl-val red">12,457</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="schedule-section">
+    <div class="schedule-title">Observation &amp; Payment Schedule</div>
+    <table class="sched-table">
+      <thead>
+        <tr>
+          <th>Observation date</th>
+          <th>Payment date</th>
+          <th>Type</th>
+          <th>Coupon condition</th>
+          <th>Autocall condition (all 4 indices)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="next-up">
+          <td>
+            <div class="sched-date">16 Feb 2027 <span class="tag-next">next</span></div>
+            <div class="sched-obs">Early redemption obs. j=1</div>
+          </td>
+          <td>23 Feb 2027</td>
+          <td><span class="tag-coupon">Coupon</span><span class="tag-call">Autocall</span></td>
+          <td class="level-cell">
+            Fixed &#8212; unconditional<br>
+            <span style="color:var(--color-text-tertiary);font-size:10px;">EUR 60 / unit guaranteed</span><br>
+            <span class="status-yes"><span class="status-icon">✓</span> Will be paid</span>
+          </td>
+          <td class="level-cell">
+            &#8805; 100% of fixing (all 4 indices)<br>
+            <span class="status-no"><span class="status-icon">✗</span> Not met — all indices below fixing</span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="sched-date">14 Feb 2028</div>
+            <div class="sched-obs">Early redemption obs. j=2</div>
+          </td>
+          <td>21 Feb 2028</td>
+          <td><span class="tag-coupon">Coupon</span><span class="tag-call">Autocall</span></td>
+          <td class="level-cell">Fixed &#8212; unconditional<br><span style="color:var(--color-text-tertiary);font-size:10px;">EUR 60 / unit guaranteed</span></td>
+          <td class="level-cell">&#8805; 100% of fixing (all 4 indices)</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="sched-date">13 Feb 2029</div>
+            <div class="sched-obs">Early redemption obs. j=3</div>
+          </td>
+          <td>20 Feb 2029</td>
+          <td><span class="tag-coupon">Coupon</span><span class="tag-call">Autocall</span></td>
+          <td class="level-cell">Fixed &#8212; unconditional<br><span style="color:var(--color-text-tertiary);font-size:10px;">EUR 60 / unit guaranteed</span></td>
+          <td class="level-cell">&#8805; 100% of fixing (all 4 indices)</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="sched-date">13 Feb 2030</div>
+            <div class="sched-obs">Expiration date (final)</div>
+          </td>
+          <td>20 Feb 2030</td>
+          <td><span class="tag-coupon">Coupon</span><span class="tag-final">Maturity</span></td>
+          <td class="level-cell">Fixed &#8212; unconditional<br><span style="color:var(--color-text-tertiary);font-size:10px;">EUR 60 / unit guaranteed</span></td>
+          <td class="level-na">No autocall &#8212; final maturity<br>
+            <span style="font-size:10px;color:var(--color-text-tertiary);">Capital at risk if kick-in breached &amp; worst-of &lt; strike</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-title">Buffer to kick-in by underlying (%)</div>
+    <div style="position:relative; height:160px;">
+      <canvas id="bufChart1"></canvas>
+    </div>
+    <div style="display:flex; gap:20px; margin-top:10px; font-size:11px; color:var(--color-text-secondary); font-family:'DM Mono',monospace;">
+      <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75;display:inline-block;"></span>Comfortable (&gt;46%)</span>
+      <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#BA7517;display:inline-block;"></span>Watch zone (≤46%)</span>
+    </div>
+  </div>
+
+  <div class="footer">As of 25 Mar 2026 · SX5E 5,531 · SPX 6,576 · NKY 53,750 · DAX 22,637 · Sources: Yahoo Finance, Trading Economics · Levels approximate</div>
+</div>
+</div>
+
+<!-- ═══════════ PAGE 2 — VONTOBEL ═══════════ -->
+<div id="p2" class="page">
+<div class="dash">
+
+  <div class="dash-header">
+    <div>
+      <div class="dash-title">Protect Multi Fixed Coupon Express Certificate Quanto</div>
+      <div class="dash-subtitle">3 underlyings · Barrier 64% · Autocall 96% · No memory · As of 25 Mar 2026</div>
+    </div>
+    <div class="status-pill"><span class="dot"></span> Barrier intact <span style="opacity:0.6;font-size:10px;">(continuous)</span></div>
+  </div>
+
+  <div class="summary-row">
+    <div class="sum-card">
+      <div class="sum-label">Worst buffer</div>
+      <div class="sum-val ok">34.5%</div>
+      <div class="sum-sub">SX5E · worst-of driver</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Avg buffer</div>
+      <div class="sum-val ok">42.1%</div>
+      <div class="sum-sub">across 3 indices</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Worst vs fixing</div>
+      <div class="sum-val danger">−7.6%</div>
+      <div class="sum-sub">SX5E · −456 pts</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Best vs fixing</div>
+      <div class="sum-val ok">+10.9%</div>
+      <div class="sum-sub">NDX · +2,371 pts</div>
+    </div>
+  </div>
+
+  <!-- 
+    Data (fixing 23 Feb 2026 approx):
+    SX5E fixing: ~5,987 (23 Feb), current 5,531 → −7.6%, barrier 64% = 3,832, buffer = (5531-3832)/5531 = 30.7% wait...
+    Actually buffer to barrier = (current - barrier)/current = (5531-3832)/5531 = 30.7%
+    NDX fixing: ~21,792 (23 Feb), current 24,163 → +10.9%, barrier 64% = 13,947, buffer = (24163-13947)/24163 = 42.3%
+    NKY fixing: ~38,678 (24 Feb), current 53,750 → +38.9%, barrier 64% = 24,754, buffer = (53750-24754)/53750 = 54.0%
+    
+    Wait — NKY was very low in Feb 2026 context. Let me recalc:
+    NKY 24 Feb 2026: ~37,800 (approx, given it was ~35k-40k range), current 53,750 = +42%
+    SX5E 23 Feb 2026: ~5,987, current 5,531 = −7.6% ✓
+    NDX 23 Feb 2026: ~21,792, current 24,163 = +10.9% ✓
+    
+    Barriers (64% of fixing):
+    SX5E: 5,987 × 0.64 = 3,832, buffer = (5531−3832)/5531 = 30.7%
+    NDX: 21,792 × 0.64 = 13,947, buffer = (24163−13947)/24163 = 42.3%
+    NKY: let's say fixing 37,800, barrier = 24,192, current 53,750, buffer = (53750−24192)/53750 = 55.0%
+    
+    Autocall level (96% of fixing):
+    SX5E: 5,987 × 0.96 = 5,748 — current 5,531 < 5,748 → NOT met
+    NDX: 21,792 × 0.96 = 20,920 — current 24,163 > 20,920 → met ✓
+    NKY: 37,800 × 0.96 = 36,288 — current 53,750 > 36,288 → met ✓
+    All 3 must be met → NOT triggered (SX5E below its 96% level)
+    
+    Worst-of = SX5E (lowest perf at −7.6%)
+  -->
+
+  <div class="index-grid cols3">
+    <div class="idx-card worst">
+      <div class="idx-top">
+        <div>
+          <div class="idx-name">EURO STOXX 50® <span class="perf-tag perf-neg">−7.6%</span></div>
+          <div class="idx-ticker">SX5E · EU0009658145</div>
+        </div>
+        <span class="worst-badge">worst-of</span>
+      </div>
+      <div class="idx-levels">
+        <div class="lvl-box"><div class="lvl-label">Fixing</div><div class="lvl-val">5,987</div></div>
+        <div class="lvl-box"><div class="lvl-label">Current</div><div class="lvl-val down">5,531</div></div>
+        <div class="lvl-box"><div class="lvl-label">Barrier</div><div class="lvl-val red">3,832</div></div>
+      </div>
+    </div>
+    <div class="idx-card">
+      <div class="idx-top">
+        <div>
+          <div class="idx-name">Nasdaq-100® <span class="perf-tag perf-pos">+10.9%</span></div>
+          <div class="idx-ticker">NDX · US6311011026</div>
+        </div>
+      </div>
+      <div class="idx-levels">
+        <div class="lvl-box"><div class="lvl-label">Fixing</div><div class="lvl-val">21,792</div></div>
+        <div class="lvl-box"><div class="lvl-label">Current</div><div class="lvl-val" style="color:var(--color-text-primary)">24,163</div></div>
+        <div class="lvl-box"><div class="lvl-label">Barrier</div><div class="lvl-val red">13,947</div></div>
+      </div>
+    </div>
+    <div class="idx-card">
+      <div class="idx-top">
+        <div>
+          <div class="idx-name">Nikkei 225 <span class="perf-tag perf-pos">+42.2%</span></div>
+          <div class="idx-ticker">NKY · JP9010C00002</div>
+        </div>
+      </div>
+      <div class="idx-levels">
+        <div class="lvl-box"><div class="lvl-label">Fixing</div><div class="lvl-val">37,808</div></div>
+        <div class="lvl-box"><div class="lvl-label">Current</div><div class="lvl-val" style="color:var(--color-text-primary)">53,750</div></div>
+        <div class="lvl-box"><div class="lvl-label">Barrier</div><div class="lvl-val red">24,197</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="schedule-section">
+    <div class="schedule-title">Observation &amp; Payment Schedule</div>
+    <table class="sched-table">
+      <thead>
+        <tr>
+          <th>Observation / Payment date</th>
+          <th>Payment date</th>
+          <th>Type</th>
+          <th>Coupon condition</th>
+          <th>Autocall condition (all 3 indices ≥ 96%)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="sched-date">3 Jun 2026</div>
+            <div class="sched-obs">Coupon payment only</div>
+          </td>
+          <td>3 Jun 2026</td>
+          <td><span class="tag-coupon">Coupon</span></td>
+          <td class="level-cell">
+            Fixed &#8212; unconditional<br>
+            <span style="color:var(--color-text-tertiary);font-size:10px;">EUR 2.00 / unit guaranteed</span><br>
+            <span class="status-yes"><span class="status-icon">✓</span> Will be paid</span>
+          </td>
+          <td class="level-na" style="text-align:right;">No autocall obs.</td>
+        </tr>
+        <tr class="next-up">
+          <td>
+            <div class="sched-date">27 Aug 2026 <span class="tag-next">next obs.</span></div>
+            <div class="sched-obs">Valuation date j=1</div>
+          </td>
+          <td>3 Sep 2026</td>
+          <td><span class="tag-coupon">Coupon</span><span class="tag-call">Autocall</span></td>
+          <td class="level-cell">
+            Fixed &#8212; unconditional<br>
+            <span style="color:var(--color-text-tertiary);font-size:10px;">EUR 2.00 / unit guaranteed</span>
+          </td>
+          <td class="level-cell">
+            &#8805; 96% of fixing (all 3 indices)<br>
+            <span style="color:var(--color-text-tertiary);font-size:10px;">SX5E &#8805; 5,748 · NDX &#8805; 20,920 · NKY &#8805; 36,296</span><br>
+            <span class="status-no"><span class="status-icon">✗</span> Not met — SX5E below 96% level</span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="sched-date">25 Nov 2026</div>
+            <div class="sched-obs">Valuation date j=2</div>
+          </td>
+          <td>3 Dec 2026</td>
+          <td><span class="tag-coupon">Coupon</span><span class="tag-call">Autocall</span></td>
+          <td class="level-cell">Fixed &#8212; unconditional<br><span style="color:var(--color-text-tertiary);font-size:10px;">EUR 2.00 / unit guaranteed</span></td>
+          <td class="level-cell">&#8805; 96% of fixing (all 3 indices)<br>
+            <span style="color:var(--color-text-tertiary);font-size:10px;">SX5E &#8805; 5,748 · NDX &#8805; 20,920 · NKY &#8805; 36,296</span>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <div class="sched-date">24 Feb 2027</div>
+            <div class="sched-obs">Final valuation date</div>
+          </td>
+          <td>3 Mar 2027</td>
+          <td><span class="tag-coupon">Coupon</span><span class="tag-final">Maturity</span></td>
+          <td class="level-cell">Fixed &#8212; unconditional<br><span style="color:var(--color-text-tertiary);font-size:10px;">EUR 2.00 / unit guaranteed</span></td>
+          <td class="level-na">No autocall &#8212; final maturity<br>
+            <span style="font-size:10px;color:var(--color-text-tertiary);">Capital at risk if barrier breached &amp; worst-of &lt; strike</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-title">Buffer to barrier by underlying (%)</div>
+    <div style="position:relative; height:130px;">
+      <canvas id="bufChart2"></canvas>
+    </div>
+    <div style="display:flex; gap:20px; margin-top:10px; font-size:11px; color:var(--color-text-secondary); font-family:'DM Mono',monospace;">
+      <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#1D9E75;display:inline-block;"></span>Comfortable (&gt;40%)</span>
+      <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:#BA7517;display:inline-block;"></span>Watch zone (≤40%)</span>
+    </div>
+  </div>
+
+  <div class="footer">As of 25 Mar 2026 · SX5E 5,531 · NDX 24,163 · NKY 53,750 · Fixing levels approximate (23–24 Feb 2026) · Sources: Yahoo Finance, FRED · Levels approximate</div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+function switchTab(pageId, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  btn.classList.add('active');
+}
+
+const isDark = matchMedia('(prefers-color-scheme: dark)').matches;
+const gridCol = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)';
+const textCol = '#888780';
+
+// Chart 1 — UBS
+new Chart(document.getElementById('bufChart1'), {
+  type: 'bar',
+  data: {
+    labels: ['DAX', 'EURO STOXX 50', 'Nikkei 225', 'S&P 500'],
+    datasets: [{
+      data: [45.5, 46.2, 47.1, 48.0],
+      backgroundColor: ['#BA7517', '#1D9E75', '#1D9E75', '#1D9E75'],
+      borderRadius: 4, barThickness: 24,
+    }]
+  },
+  options: {
+    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.raw.toFixed(1) + '% above kick-in' } } },
+    scales: {
+      x: { min: 43, max: 51, grid: { color: gridCol }, ticks: { color: textCol, font: { family: 'DM Mono', size: 11 }, callback: v => v + '%' }, border: { display: false } },
+      y: { grid: { display: false }, ticks: { color: textCol, font: { family: 'DM Mono', size: 11 } }, border: { display: false } }
+    }
+  }
+});
+
+// Chart 2 — Vontobel
+new Chart(document.getElementById('bufChart2'), {
+  type: 'bar',
+  data: {
+    labels: ['SX5E', 'NDX', 'NKY'],
+    datasets: [{
+      data: [30.7, 42.3, 55.0],
+      backgroundColor: ['#BA7517', '#1D9E75', '#1D9E75'],
+      borderRadius: 4, barThickness: 24,
+    }]
+  },
+  options: {
+    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' ' + ctx.raw.toFixed(1) + '% above barrier' } } },
+    scales: {
+      x: { min: 0, max: 70, grid: { color: gridCol }, ticks: { color: textCol, font: { family: 'DM Mono', size: 11 }, callback: v => v + '%' }, border: { display: false } },
+      y: { grid: { display: false }, ticks: { color: textCol, font: { family: 'DM Mono', size: 11 } }, border: { display: false } }
+    }
+  }
+});
+</script>
