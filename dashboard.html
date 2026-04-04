@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Structured Products Dashboard</title>
+<style>
+body { font-family: Arial; background:#f8f8f7; padding:20px; }
+.card { background:white; padding:20px; border-radius:10px; margin-bottom:20px; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+
+.barrier-tag {
+ padding:4px 8px;
+ border-radius:6px;
+ font-size:12px;
+}
+
+.green { background:#EDF9F5; color:#1D9E75; }
+.red { background:#FCEEED; color:#C4442B; }
+
+</style>
+</head>
+<body>
+
+<h2>Structured Products Dashboard</h2>
+<p>02 Apr 2026</p>
+
+<div class="card">
+<h3>UBS · DE000UBS0P13</h3>
+
+<div class="grid">
+
+<div>
+<h4>Underlyings</h4>
+
+<p>SX5E: -4.88%</p>
+
+<p>SPX: -4.00%</p>
+
+<p>NKY: -7.87%</p>
+
+<p>DAX: -7.01%</p>
+
+</div>
+
+<div>
+<h4>Product Characteristics</h4>
+
+<p><b>Maturity:</b> 20 Feb 2030</p>
+<p><b>Barrier Level:</b> 50%</p>
+<p><b>Barrier Type:</b> 
+<span class="barrier-tag green">
+AM (intact)
+</span>
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="card">
+<h3>VONTOBEL · DE000VJ5XM04</h3>
+
+<div class="grid">
+
+<div>
+<h4>Underlyings</h4>
+
+<p>SX5E: 2.93%</p>
+
+<p>NDX: 9.70%</p>
+
+<p>NKY: -2.39%</p>
+
+</div>
+
+<div>
+<h4>Product Characteristics</h4>
+
+<p><b>Maturity:</b> 03 Mar 2027</p>
+<p><b>Barrier Level:</b> 64%</p>
+<p><b>Barrier Type:</b> 
+<span class="barrier-tag green">
+AM (intact)
+</span>
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<p style="font-size:10px;color:gray;">
+Barrier status based on current spot only.
+</p>
+
+</body>
+</html>
